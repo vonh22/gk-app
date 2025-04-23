@@ -1,0 +1,1967 @@
+{% extends "base.html" %}
+
+{% block css %}
+<style>
+  :root {
+    /* Primary palette */
+    --gk-red: #ce0e2d;
+    --gk-dark-red: #a10922;
+    --gk-dark: #1a1a1a;
+    --gk-text: #2c3e50;
+    --gk-light-text: #64748b;
+    
+    /* Neutral palette */
+    --surface-0: #ffffff;
+    --surface-50: #f8fafc;
+    --surface-100: #f1f5f9;
+    --surface-200: #e2e8f0;
+    
+    /* Accents */
+    --success: #10b981;
+    --danger: #ef4444;
+    
+    /* Typography */
+    --body-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+    --heading-font: var(--body-font);
+    
+    /* Spacing system */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 5rem;
+    
+    /* Animation */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+  }
+  
+  body {
+    font-family: var(--body-font);
+    color: var(--gk-text);
+    background-color: var(--surface-50);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--gk-dark);
+  }
+  
+  /* Container width constraints for responsive design */
+  .container-narrow {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  
+  /* Hero section styling */
+  .hero-section {
+    position: relative;
+    padding: var(--space-3xl) 0;
+    overflow: hidden;
+    background-color: var(--surface-0);
+  }
+  
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 100%;
+    background-image: linear-gradient(135deg, rgba(206, 14, 45, 0.05) 0%, rgba(206, 14, 45, 0.1) 100%);
+    clip-path: polygon(15% 0, 100% 0%, 100% 100%, 0% 100%);
+    z-index: 0;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+    background: linear-gradient(90deg, var(--gk-dark) 0%, var(--gk-red) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--gk-light-text);
+    max-width: 32rem;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .gk-logo {
+    height: 40px;
+    margin-bottom: var(--space-xl);
+  }
+  
+  /* Stock Price Card */
+  .stock-price-card {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-xl);
+    transform: translateY(var(--space-xl));
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--surface-200);
+  }
+  
+  .stock-price-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--gk-red);
+  }
+  
+  .stock-ticker {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(206, 14, 45, 0.1);
+    color: var(--gk-red);
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .stock-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .stock-price {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: var(--space-md) 0;
+    letter-spacing: -0.03em;
+  }
+  
+  .stock-change-positive {
+    color: var(--success);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .stock-change-negative {
+    color: var(--danger);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .stock-details {
+    margin-top: var(--space-lg);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+  
+  .stock-detail-item {
+    padding-right: var(--space-md);
+  }
+  
+  .stock-detail-label {
+    font-size: 0.875rem;
+    color: var(--gk-light-text);
+    margin-bottom: 0.25rem;
+  }
+  
+  .stock-detail-value {
+    font-weight: 600;
+  }
+  
+  /* Button Styling */
+  .btn {
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+  }
+  
+  .btn-icon {
+    margin-left: 0.5rem;
+  }
+  
+  .btn-primary {
+    background-color: var(--gk-red);
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--gk-dark-red);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-outline {
+    background-color: transparent;
+    color: var(--gk-red);
+    border: 2px solid var(--gk-red);
+  }
+  
+  .btn-outline:hover {
+    background-color: rgba(206, 14, 45, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Features Section */
+  .section {
+    padding: var(--space-3xl) 0;
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+    letter-spacing: -0.02em;
+  }
+  
+  .section-subtitle {
+    font-size: 1.125rem;
+    color: var(--gk-light-text);
+    margin-bottom: var(--space-xl);
+    max-width: 36rem;
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+  
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .feature-card {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-slow);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--surface-200);
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .feature-card-inner {
+    padding: var(--space-xl);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .feature-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(206, 14, 45, 0.1);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    color: var(--gk-red);
+  }
+  
+  .feature-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .feature-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .feature-text {
+    color: var(--gk-light-text);
+    margin-bottom: var(--space-lg);
+    flex: 1;
+  }
+  
+  /* Dashboard Preview Section */
+  .dashboard-preview {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    position: relative;
+    margin-top: var(--space-xl);
+  }
+  
+  .dashboard-preview img {
+    width: 100%;
+    display: block;
+    border-bottom-left-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+  }
+  
+  .dashboard-preview-header {
+    background: var(--surface-100);
+    padding: var(--space-sm) var(--space-lg);
+    display: flex;
+    align-items: center;
+  }
+  
+  .window-controls {
+    display: flex;
+    gap: 6px;
+    margin-right: var(--space-md);
+  }
+  
+  .window-control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  .window-close {
+    background-color: #ff5f57;
+  }
+  
+  .window-minimize {
+    background-color: #febc2e;
+  }
+  
+  .window-maximize {
+    background-color: #28c841;
+  }
+  
+  .browser-address {
+    background: var(--surface-0);
+    border-radius: var(--radius-full);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    color: var(--gk-light-text);
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Market Overview Section */
+  .market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+  }
+  
+  .market-card {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-xl);
+    height: 100%;
+    border: 1px solid var(--surface-200);
+  }
+  
+  .market-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--surface-200);
+  }
+  
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--surface-200);
+  }
+  
+  .metric-row:last-child {
+    border-bottom: none;
+  }
+  
+  .metric-label {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .metric-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    margin-left: var(--space-sm);
+  }
+  
+  .metric-value {
+    font-weight: 600;
+  }
+  
+  /* Stats Section */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .stat-card {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--surface-200);
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gk-dark);
+    margin-bottom: var(--space-xs);
+    line-height: 1.2;
+  }
+  
+  .stat-label {
+    color: var(--gk-light-text);
+    font-size: 0.875rem;
+  }
+  
+  /* Chart card styling */
+  .chart-card {
+    background: var(--surface-0);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--space-xl);
+    border: 1px solid var(--surface-200);
+  }
+  
+  .chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .chart-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  
+  .time-selector {
+    display: flex;
+    gap: var(--space-xs);
+  }
+  
+  .time-button {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: transparent;
+    border: none;
+    color: var(--gk-light-text);
+  }
+  
+  .time-button.active {
+    background: rgba(206, 14, 45, 0.1);
+    color: var(--gk-red);
+    font-weight: 600;
+  }
+  
+  /* CTA Section */
+  .cta-section {
+    background-color: var(--surface-0);
+    padding: var(--space-2xl) 0;
+    text-align: center;
+  }
+  
+  .cta-card {
+    background: linear-gradient(135deg, var(--gk-red) 0%, var(--gk-dark-red) 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    color: white;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cta-card::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    top: -75px;
+    right: -75px;
+    border-radius: 50%;
+  }
+  
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    bottom: -50px;
+    left: -50px;
+    border-radius: 50%;
+  }
+  
+  .cta-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: var(--space-md);
+    color: white;
+  }
+  
+  .cta-subtitle {
+    font-size: 1.125rem;
+    max-width: 36rem;
+    margin: 0 auto var(--space-xl);
+    opacity: 0.9;
+  }
+  
+  .btn-light {
+    background-color: white;
+    color: var(--gk-red);
+    border: none;
+  }
+  
+  .btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Change indicators */
+  .change-indicator {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  
+  .change-indicator svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+  
+  .change-positive {
+    color: var(--success);
+  }
+  
+  .change-negative {
+    color: var(--danger);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .hero-title {
+      font-size: 2.75rem;
+    }
+    
+    .stock-price {
+      font-size: 2.5rem;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+    }
+    
+    .feature-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+    
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stock-price-card {
+      transform: translateY(0);
+      margin-top: var(--space-xl);
+    }
+    
+    .hero-bg {
+      width: 100%;
+      clip-path: none;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .stats-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-bg">
+    <!-- Professional financial pattern with stock visualization -->
+    <svg class="hero-pattern" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background grid -->
+      <defs>
+        <pattern id="grid-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" width="40" height="40" fill="none" stroke="rgba(206, 14, 45, 0.03)" stroke-width="1"/>
+        </pattern>
+        
+        <!-- Gradient for chart -->
+        <linearGradient id="chart-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(206, 14, 45, 0.2)"/>
+          <stop offset="100%" stop-color="rgba(206, 14, 45, 0)"/>
+        </linearGradient>
+      </defs>
+      
+      <!-- Grid background -->
+      <rect width="100%" height="100%" fill="url(#grid-pattern)"/>
+      
+      <!-- Abstract financial data visualization -->
+      <!-- Main chart -->
+      <path d="M0,300 C50,320 100,280 150,310 C200,340 250,250 300,230 C350,210 400,240 450,190 C500,140 550,180 600,150 C650,120 700,170 750,140 C800,110 850,150 900,130" 
+            stroke="rgba(206, 14, 45, 0.2)" stroke-width="3" fill="none"/>
+            
+      <!-- Area chart -->
+      <path d="M0,300 C50,320 100,280 150,310 C200,340 250,250 300,230 C350,210 400,240 450,190 C500,140 550,180 600,150 C650,120 700,170 750,140 C800,110 850,150 900,130 L900,500 L0,500 Z" 
+            fill="url(#chart-gradient)"/>
+            
+      <!-- Moving average -->
+      <path d="M0,320 C50,330 100,300 150,320 C200,340 250,290 300,270 C350,250 400,260 450,230 C500,200 550,220 600,210 C650,200 700,210 750,190 C800,170 850,190 900,180" 
+            stroke="rgba(59, 130, 246, 0.15)" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+      
+      <!-- Volume bars -->
+      <rect x="50" y="450" width="10" height="30" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="100" y="460" width="10" height="20" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="150" y="440" width="10" height="40" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="200" y="455" width="10" height="25" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="250" y="430" width="10" height="50" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="300" y="450" width="10" height="30" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="350" y="445" width="10" height="35" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="400" y="435" width="10" height="45" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="450" y="425" width="10" height="55" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="500" y="440" width="10" height="40" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="550" y="450" width="10" height="30" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="600" y="420" width="10" height="60" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="650" y="445" width="10" height="35" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="700" y="455" width="10" height="25" fill="rgba(206, 14, 45, 0.05)"/>
+      <rect x="750" y="430" width="10" height="50" fill="rgba(206, 14, 45, 0.05)"/>
+      
+      <!-- Candlesticks -->
+      <line x1="200" y1="290" x2="200" y2="320" stroke="rgba(239, 68, 68, 0.2)" stroke-width="1"/>
+      <rect x="195" y="320" width="10" height="20" fill="rgba(239, 68, 68, 0.2)"/>
+      
+      <line x1="250" y1="230" x2="250" y2="290" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="245" y="230" width="10" height="60" fill="rgba(34, 197, 94, 0.2)"/>
+      
+      <line x1="300" y1="210" x2="300" y2="250" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="295" y="210" width="10" height="40" fill="rgba(34, 197, 94, 0.2)"/>
+      
+      <line x1="350" y1="190" x2="350" y2="230" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="345" y="190" width="10" height="40" fill="rgba(34, 197, 94, 0.2)"/>
+      
+      <line x1="400" y1="220" x2="400" y2="260" stroke="rgba(239, 68, 68, 0.2)" stroke-width="1"/>
+      <rect x="395" y="240" width="10" height="20" fill="rgba(239, 68, 68, 0.2)"/>
+      
+      <line x1="450" y1="170" x2="450" y2="210" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="445" y="170" width="10" height="40" fill="rgba(34, 197, 94, 0.2)"/>
+      
+      <line x1="500" y1="120" x2="500" y2="160" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="495" y="120" width="10" height="40" fill="rgba(34, 197, 94, 0.2)"/>
+      
+      <line x1="550" y1="160" x2="550" y2="200" stroke="rgba(239, 68, 68, 0.2)" stroke-width="1"/>
+      <rect x="545" y="180" width="10" height="20" fill="rgba(239, 68, 68, 0.2)"/>
+      
+      <line x1="600" y1="130" x2="600" y2="170" stroke="rgba(34, 197, 94, 0.2)" stroke-width="1"/>
+      <rect x="595" y="130" width="10" height="40" fill="rgba(34, 197, 94, 0.2)"/>
+    </svg>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 hero-content">
+        <img src="/api/placeholder/160/40" alt="GraceKennedy Logo" class="gk-logo">
+        <h1 class="hero-title">Intelligent Stock Analysis</h1>
+        <p class="hero-subtitle">Advanced analytics and insights for the Jamaica Stock Exchange, powered by GraceKennedy.</p>
+        <a href="#dashboard" class="btn btn-primary">
+          Explore Dashboard
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </a>
+        
+        <!-- Decorative dots -->
+        <div class="hero-decoration">
+          <div class="dot dot-1"></div>
+          <div class="dot dot-2"></div>
+          <div class="dot dot-3"></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="stock-price-card">
+          <div class="mini-chart">
+            <svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid lines -->
+              <line x1="0" y1="20" x2="300" y2="20" stroke="rgba(226, 232, 240, 0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+              <line x1="0" y1="40" x2="300" y2="40" stroke="rgba(226, 232, 240, 0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+              <line x1="0" y1="60" x2="300" y2="60" stroke="rgba(226, 232, 240, 0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+              
+              <!-- Chart Line -->
+              <path d="M0,60 L20,58 L40,62 L60,56 L80,59 L100,54 L120,50 L140,45 L160,48 L180,42 L200,40 L220,35 L240,32 L260,28 L280,25 L300,20" 
+                    stroke="rgba(206, 14, 45, 0.8)" stroke-width="2.5" fill="none"/>
+              
+              <!-- Area fill -->
+              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(206, 14, 45, 0.2)"/>
+                <stop offset="100%" stop-color="rgba(206, 14, 45, 0)"/>
+              </linearGradient>
+              <path d="M0,60 L20,58 L40,62 L60,56 L80,59 L100,54 L120,50 L140,45 L160,48 L180,42 L200,40 L220,35 L240,32 L260,28 L280,25 L300,20 L300,80 L0,80 Z" 
+                    fill="url(#areaGradient)"/>
+              
+              <!-- Volume bars -->
+              <rect x="20" y="70" width="5" height="10" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="40" y="70" width="5" height="7" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="60" y="70" width="5" height="9" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="80" y="70" width="5" height="5" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="100" y="70" width="5" height="6" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="120" y="70" width="5" height="8" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="140" y="70" width="5" height="12" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="160" y="70" width="5" height="7" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="180" y="70" width="5" height="9" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="200" y="70" width="5" height="11" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="220" y="70" width="5" height="8" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="240" y="70" width="5" height="13" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="260" y="70" width="5" height="7" fill="rgba(206, 14, 45, 0.1)"/>
+              <rect x="280" y="70" width="5" height="10" fill="rgba(206, 14, 45, 0.1)"/>
+              
+              <!-- Data points -->
+              <circle cx="100" cy="54" r="2" fill="white" stroke="rgba(206, 14, 45, 0.8)" stroke-width="1.5"/>
+              <circle cx="140" cy="45" r="2" fill="white" stroke="rgba(206, 14, 45, 0.8)" stroke-width="1.5"/>
+              <circle cx="180" cy="42" r="2" fill="white" stroke="rgba(206, 14, 45, 0.8)" stroke-width="1.5"/>
+              <circle cx="220" cy="35" r="2" fill="white" stroke="rgba(206, 14, 45, 0.8)" stroke-width="1.5"/>
+              <circle cx="260" cy="28" r="3" fill="white" stroke="rgba(206, 14, 45, 0.8)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="stock-ticker">JSE: GK</span>
+          <h2 class="stock-name">GraceKennedy Ltd</h2>
+          <div class="stock-price">$54.87</div>
+          <div class="stock-change-positive">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m5 12 7-7 7 7"/>
+              <path d="M12 19V5"/>
+            </svg>
+            +1.24 (2.31%)
+            <span style="color: var(--gk-light-text); font-weight: 400; margin-left: 0.5rem; font-size: 0.813rem;">Today</span>
+          </div>
+          
+          <div class="stock-details">
+            <div class="stock-detail-item">
+              <div class="stock-detail-label">Previous Close</div>
+              <div class="stock-detail-value">$53.63</div>
+            </div>
+            <div class="stock-detail-item">
+              <div class="stock-detail-label">Day Range</div>
+              <div class="stock-detail-value">$53.88 - $55.10</div>
+            </div>
+            <div class="stock-detail-item">
+              <div class="stock-detail-label">52 Week Range</div>
+              <div class="stock-detail-value">$45.20 - $62.75</div>
+            </div>
+            <div class="stock-detail-item">
+              <div class="stock-detail-label">Avg. Volume</div>
+              <div class="stock-detail-value">125,340</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-pattern {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.7;
+  }
+  
+  .mini-chart {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 80px;
+    opacity: 1;
+    overflow: hidden;
+    border-top-right-radius: var(--radius-lg);
+  }
+  
+  .hero-decoration {
+    position: absolute;
+    bottom: -40px;
+    left: 10%;
+    z-index: -1;
+  }
+  
+  .dot {
+    position: absolute;
+    border-radius: 50%;
+    background-color: var(--gk-red);
+    opacity: 0.1;
+  }
+  
+  .dot-1 {
+    width: 120px;
+    height: 120px;
+    bottom: -60px;
+    left: -80px;
+  }
+  
+  .dot-2 {
+    width: 80px;
+    height: 80px;
+    bottom: -20px;
+    left: 20px;
+    background-color: var(--gk-dark);
+  }
+  
+  .dot-3 {
+    width: 40px;
+    height: 40px;
+    bottom: 40px;
+    left: -20px;
+  }
+</style>
+
+<!-- Key Stats Section -->
+<section class="section">
+  <div class="container container-narrow">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">+8.64%</div>
+        <div class="stat-label">YTD Return</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">11.37x</div>
+        <div class="stat-label">P/E Ratio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">2.85%</div>
+        <div class="stat-label">Dividend Yield</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">J$54.25B</div>
+        <div class="stat-label">Market Cap</div>
+      </div>
+    </div>
+    
+    <!-- Stock Chart -->
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h3 class="chart-card-title">GK Stock Performance</h3>
+        <div class="time-selector">
+          <button class="time-button">1D</button>
+          <button class="time-button">1W</button>
+          <button class="time-button active">1M</button>
+          <button class="time-button">3M</button>
+          <button class="time-button">1Y</button>
+          <button class="time-button">All</button>
+        </div>
+      </div>
+      <img src="/api/placeholder/1000/400" alt="GK Stock Performance Chart" class="img-fluid rounded" />
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="section" id="features" style="background-color: var(--surface-100);">
+  <div class="container">
+    <h2 class="section-title">Powerful Analytics Suite</h2>
+    <p class="section-subtitle">Our comprehensive tools help you make data-driven investment decisions with ease.</p>
+    
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-card-inner">
+          <div class="feature-illustration">
+            <svg class="feature-image" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+              <!-- Technical Analysis Illustration -->
+              <rect x="30" y="30" width="220" height="120" rx="4" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="1"/>
+              <line x1="30" y1="50" x2="250" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+              <circle cx="45" cy="40" r="3" fill="#ef4444"/>
+              <circle cx="55" cy="40" r="3" fill="#f97316"/>
+              <circle cx="65" cy="40" r="3" fill="#22c55e"/>
+              
+              <!-- Chart Lines -->
+              <path d="M40,130 L40,60 L250,60" stroke="#64748b" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+              <text x="35" y="150" font-size="8" fill="#64748b">Jan</text>
+              <text x="75" y="150" font-size="8" fill="#64748b">Feb</text>
+              <text x="115" y="150" font-size="8" fill="#64748b">Mar</text>
+              <text x="155" y="150" font-size="8" fill="#64748b">Apr</text>
+              <text x="195" y="150" font-size="8" fill="#64748b">May</text>
+              <text x="235" y="150" font-size="8" fill="#64748b">Jun</text>
+              
+              <!-- Price Points -->
+              <text x="25" y="65" font-size="8" fill="#64748b">100</text>
+              <text x="25" y="85" font-size="8" fill="#64748b">90</text>
+              <text x="25" y="105" font-size="8" fill="#64748b">80</text>
+              <text x="25" y="125" font-size="8" fill="#64748b">70</text>
+              
+              <!-- Chart Lines -->
+              <path d="M40,100 L65,95 L90,105 L115,90 L140,85 L165,95 L190,80 L215,70 L240,75" stroke="#ce0e2d" stroke-width="2" fill="none"/>
+              
+              <!-- Moving Average -->
+              <path d="M40,105 L65,100 L90,100 L115,95 L140,90 L165,85 L190,85 L215,80 L240,80" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="2"/>
+              
+              <!-- Volume Bars -->
+              <rect x="40" y="130" width="5" height="10" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="65" y="130" width="5" height="15" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="90" y="130" width="5" height="5" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="115" y="130" width="5" height="12" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="140" y="130" width="5" height="8" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="165" y="130" width="5" height="10" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="190" y="130" width="5" height="18" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="215" y="130" width="5" height="7" fill="rgba(206, 14, 45, 0.2)"/>
+              <rect x="240" y="130" width="5" height="9" fill="rgba(206, 14, 45, 0.2)"/>
+            </svg>
+          </div>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Technical Analysis</h3>
+          <p class="feature-text">Advanced charting with over 100+ technical indicators, pattern recognition, and customizable time frames.</p>
+          <a href="#" class="btn btn-outline">View Charts</a>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-inner">
+          <div class="feature-illustration">
+            <svg class="feature-image" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+              <!-- Financial Report Illustration -->
+              <rect x="40" y="30" width="200" height="110" rx="4" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="1"/>
+              <rect x="40" y="30" width="200" height="20" rx="4" fill="rgba(206, 14, 45, 0.1)" stroke="#e2e8f0" stroke-width="1"/>
+              
+              <!-- Header -->
+              <text x="50" y="44" font-size="10" font-weight="bold" fill="#2c3e50">GK Financial Statement</text>
+              
+              <!-- Table rows -->
+              <line x1="40" y1="50" x2="240" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="50" y="65" font-size="8" fill="#64748b">Revenue</text>
+              <text x="170" y="65" font-size="8" fill="#64748b">$124.5M</text>
+              <text x="220" y="65" font-size="8" fill="#22c55e">↑ 8.3%</text>
+              
+              <line x1="40" y1="70" x2="240" y2="70" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="50" y="85" font-size="8" fill="#64748b">Gross Profit</text>
+              <text x="170" y="85" font-size="8" fill="#64748b">$48.2M</text>
+              <text x="220" y="85" font-size="8" fill="#22c55e">↑ 5.1%</text>
+              
+              <line x1="40" y1="90" x2="240" y2="90" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="50" y="105" font-size="8" fill="#64748b">Operating Income</text>
+              <text x="170" y="105" font-size="8" fill="#64748b">$28.6M</text>
+              <text x="220" y="105" font-size="8" fill="#22c55e">↑ 3.7%</text>
+              
+              <line x1="40" y1="110" x2="240" y2="110" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="50" y="125" font-size="8" fill="#64748b">Net Income</text>
+              <text x="170" y="125" font-size="8" fill="#64748b">$19.4M</text>
+              <text x="220" y="125" font-size="8" fill="#22c55e">↑ 6.2%</text>
+              
+              <!-- Decorative elements -->
+              <circle cx="30" cy="40" r="6" fill="rgba(206, 14, 45, 0.2)"/>
+              <circle cx="250" cy="120" r="8" fill="rgba(206, 14, 45, 0.1)"/>
+              <circle cx="260" cy="30" r="5" fill="rgba(206, 14, 45, 0.15)"/>
+            </svg>
+          </div>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"/>
+              <path d="M7 7h10"/>
+              <path d="M7 12h10"/>
+              <path d="M7 17h4"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Fundamental Analysis</h3>
+          <p class="feature-text">Comprehensive financial data and ratios for in-depth company evaluation and valuation.</p>
+          <a href="#" class="btn btn-outline">View Financials</a>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-inner">
+          <div class="feature-illustration">
+            <svg class="feature-image" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+              <!-- Stock Screener Illustration -->
+              <rect x="40" y="20" width="200" height="120" rx="4" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="1"/>
+              
+              <!-- Filter Section -->
+              <rect x="50" y="30" width="180" height="30" rx="4" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+              <rect x="60" y="38" width="40" height="14" rx="7" fill="rgba(206, 14, 45, 0.1)" stroke="rgba(206, 14, 45, 0.3)" stroke-width="1"/>
+              <text x="70" y="48" font-size="8" fill="#ce0e2d">P/E < 15</text>
+              
+              <rect x="110" y="38" width="50" height="14" rx="7" fill="rgba(59, 130, 246, 0.1)" stroke="rgba(59, 130, 246, 0.3)" stroke-width="1"/>
+              <text x="115" y="48" font-size="8" fill="#3b82f6">Div Yield > 2%</text>
+              
+              <rect x="170" y="38" width="50" height="14" rx="7" fill="rgba(34, 197, 94, 0.1)" stroke="rgba(34, 197, 94, 0.3)" stroke-width="1"/>
+              <text x="175" y="48" font-size="8" fill="#22c55e">ROE > 10%</text>
+              
+              <!-- Results Table -->
+              <rect x="50" y="70" width="180" height="60" rx="4" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+              
+              <!-- Table Headers -->
+              <rect x="50" y="70" width="180" height="15" rx="0" fill="rgba(226, 232, 240, 0.5)"/>
+              <text x="60" y="80" font-size="7" font-weight="bold" fill="#64748b">Symbol</text>
+              <text x="100" y="80" font-size="7" font-weight="bold" fill="#64748b">Name</text>
+              <text x="170" y="80" font-size="7" font-weight="bold" fill="#64748b">Price</text>
+              <text x="200" y="80" font-size="7" font-weight="bold" fill="#64748b">Change</text>
+              
+              <!-- Table Rows -->
+              <line x1="50" y1="85" x2="230" y2="85" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="60" y="95" font-size="7" fill="#ce0e2d" font-weight="bold">GK</text>
+              <text x="100" y="95" font-size="7" fill="#2c3e50">GraceKennedy</text>
+              <text x="170" y="95" font-size="7" fill="#2c3e50">$54.87</text>
+              <text x="200" y="95" font-size="7" fill="#22c55e">+2.31%</text>
+              
+              <line x1="50" y1="100" x2="230" y2="100" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="60" y="110" font-size="7" fill="#2c3e50">NCBFG</text>
+              <text x="100" y="110" font-size="7" fill="#2c3e50">NCB Financial</text>
+              <text x="170" y="110" font-size="7" fill="#2c3e50">$149.11</text>
+              <text x="200" y="110" font-size="7" fill="#22c55e">+0.75%</text>
+              
+              <line x1="50" y1="115" x2="230" y2="115" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="60" y="125" font-size="7" fill="#2c3e50">JMMBGL</text>
+              <text x="100" y="125" font-size="7" fill="#2c3e50">JMMB Group</text>
+              <text x="170" y="125" font-size="7" fill="#2c3e50">$38.50</text>
+              <text x="200" y="125" font-size="7" fill="#ef4444">-1.50%</text>
+            </svg>
+          </div>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Stock Screener</h3>
+          <p class="feature-text">Filter stocks based on technical and fundamental criteria to find the best investment opportunities.</p>
+          <a href="#" class="btn btn-outline">Launch Screener</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feature-illustration {
+    width: 100%;
+    height: 160px;
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  
+  .feature-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+
+<!-- Dashboard Preview -->
+<section class="section" id="dashboard">
+  <div class="container container-narrow">
+    <h2 class="section-title">Interactive Dashboard</h2>
+    <p class="section-subtitle">Get a comprehensive view of the Jamaica Stock Exchange with our intuitive dashboard.</p>
+    
+    <div class="dashboard-preview">
+      <div class="dashboard-preview-header">
+        <div class="window-controls">
+          <div class="window-control window-close"></div>
+          <div class="window-control window-minimize"></div>
+          <div class="window-control window-maximize"></div>
+        </div>
+        <div class="browser-address">https://gk-analytics.com/dashboard</div>
+      </div>
+      
+      <div class="dashboard-screenshot">
+        <!-- Professional GK Stock Performance Dashboard -->
+        <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+          <!-- Dashboard Background -->
+          <rect width="1000" height="600" fill="#f8fafc"/>
+          
+          <!-- Left Sidebar -->
+          <rect x="0" y="0" width="200" height="600" fill="#ffffff"/>
+          <rect x="0" y="0" width="200" height="60" fill="#ce0e2d"/>
+          
+          <!-- GK Logo in sidebar -->
+          <svg x="20" y="18" width="30" height="24" viewBox="0 0 100 80">
+            <rect width="100" height="80" rx="8" fill="white"/>
+            <path d="M20,20 L35,20 L50,40 L65,20 L80,20 L80,60 L65,60 L65,40 L50,60 L35,40 L35,60 L20,60 Z" fill="#ce0e2d"/>
+          </svg>
+          <text x="60" y="35" font-size="16" fill="white" font-weight="bold">GK Analytics</text>
+          
+          <!-- Sidebar Menu -->
+          <rect x="20" y="80" width="160" height="36" rx="4" fill="rgba(206, 14, 45, 0.1)"/>
+          <circle cx="36" cy="98" r="6" fill="#ce0e2d"/>
+          <text x="50" y="102" font-size="14" fill="#ce0e2d" font-weight="bold">Dashboard</text>
+          
+          <circle cx="36" cy="148" r="6" fill="#64748b"/>
+          <text x="50" y="152" font-size="14" fill="#64748b">Market Overview</text>
+          
+          <circle cx="36" cy="198" r="6" fill="#64748b"/>
+          <text x="50" y="202" font-size="14" fill="#64748b">Technical Analysis</text>
+          
+          <circle cx="36" cy="248" r="6" fill="#64748b"/>
+          <text x="50" y="252" font-size="14" fill="#64748b">Fundamentals</text>
+          
+          <circle cx="36" cy="298" r="6" fill="#64748b"/>
+          <text x="50" y="302" font-size="14" fill="#64748b">Screener</text>
+          
+          <circle cx="36" cy="348" r="6" fill="#64748b"/>
+          <text x="50" y="352" font-size="14" fill="#64748b">Watchlist</text>
+          
+          <!-- Main Content Area -->
+          <!-- Top Bar -->
+          <rect x="200" y="0" width="800" height="60" fill="white"/>
+          <text x="230" y="35" font-size="18" fill="#1e293b" font-weight="bold">Dashboard</text>
+          
+          <!-- Date Selector -->
+          <rect x="380" y="15" width="180" height="30" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="400" y="35" font-size="14" fill="#64748b">April 9, 2025</text>
+          <path d="M530,30 l6,-6 l6,6" stroke="#64748b" stroke-width="1.5" fill="none"/>
+          
+          <!-- Search Bar -->
+          <rect x="600" y="15" width="240" height="30" rx="15" fill="#f1f5f9"/>
+          <text x="625" y="35" font-size="14" fill="#94a3b8">Search stocks...</text>
+          <circle cx="615" cy="30" r="4" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="618" y1="33" x2="622" y2="37" stroke="#94a3b8" stroke-width="1.5"/>
+          
+          <!-- User Profile -->
+          <circle cx="960" cy="30" r="20" fill="#f1f5f9"/>
+          <circle cx="960" cy="24" r="7" fill="#94a3b8"/>
+          <rect x="947" y="34" width="26" height="13" rx="6" fill="#94a3b8"/>
+          
+          <!-- Content Grid -->
+          <!-- Top Stats Cards -->
+          <rect x="220" y="80" width="230" height="120" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="240" y="110" font-size="14" fill="#64748b">JSE Index</text>
+          <text x="240" y="140" font-size="24" fill="#1e293b" font-weight="bold">392,452.34</text>
+          <text x="240" y="170" font-size="14" fill="#22c55e">+0.65% Today</text>
+          <rect x="370" y="100" width="60" height="60" fill="rgba(34, 197, 94, 0.1)" rx="30"/>
+          <path d="M390,130 L400,120 L410,130 M400,120 L400,140" stroke="#22c55e" stroke-width="2"/>
+          
+          <rect x="470" y="80" width="230" height="120" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="490" y="110" font-size="14" fill="#64748b">GK Stock Price</text>
+          <text x="490" y="140" font-size="24" fill="#1e293b" font-weight="bold">$54.87</text>
+          <text x="490" y="170" font-size="14" fill="#22c55e">+2.31% Today</text>
+          <rect x="620" y="100" width="60" height="60" fill="rgba(206, 14, 45, 0.1)" rx="30"/>
+          <path d="M640,130 L650,120 L660,130 M650,120 L650,140" stroke="#ce0e2d" stroke-width="2"/>
+          
+          <rect x="720" y="80" width="230" height="120" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="740" y="110" font-size="14" fill="#64748b">Market Volume</text>
+          <text x="740" y="140" font-size="24" fill="#1e293b" font-weight="bold">12.5M</text>
+          <text x="740" y="170" font-size="14" fill="#ef4444">-8.3% Today</text>
+          <rect x="870" y="100" width="60" height="60" fill="rgba(239, 68, 68, 0.1)" rx="30"/>
+          <path d="M890,130 L900,140 L910,130 M900,120 L900,140" stroke="#ef4444" stroke-width="2"/>
+          
+          <!-- Main Stock Performance Chart -->
+          <rect x="220" y="220" width="480" height="320" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="240" y="250" font-size="18" fill="#1e293b" font-weight="bold">GK Stock Performance</text>
+          
+          <!-- Chart Toolbar -->
+          <rect x="520" y="235" width="160" height="30" rx="15" fill="#f1f5f9"/>
+          <rect x="520" y="235" width="40" height="30" rx="15" fill="#ce0e2d"/>
+          <text x="530" y="255" font-size="12" fill="white">1D</text>
+          <text x="565" y="255" font-size="12" fill="#64748b">1W</text>
+          <text x="590" y="255" font-size="12" fill="#64748b">1M</text>
+          <text x="615" y="255" font-size="12" fill="#64748b">3M</text>
+          <text x="640" y="255" font-size="12" fill="#64748b">1Y</text>
+          
+          <!-- Chart Area -->
+          <rect x="240" y="280" width="440" height="240" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+          
+          <!-- Chart Grid -->
+          <line x1="240" y1="320" x2="680" y2="320" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="240" y1="360" x2="680" y2="360" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="240" y1="400" x2="680" y2="400" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="240" y1="440" x2="680" y2="440" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="240" y1="480" x2="680" y2="480" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          
+          <line x1="280" y1="280" x2="280" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="320" y1="280" x2="320" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="360" y1="280" x2="360" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="400" y1="280" x2="400" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="440" y1="280" x2="440" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="480" y1="280" x2="480" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="520" y1="280" x2="520" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="560" y1="280" x2="560" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="600" y1="280" x2="600" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          <line x1="640" y1="280" x2="640" y2="520" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+          
+          <!-- Price Labels -->
+          <text x="230" y="285" font-size="10" fill="#64748b">$58</text>
+          <text x="230" y="325" font-size="10" fill="#64748b">$56</text>
+          <text x="230" y="365" font-size="10" fill="#64748b">$54</text>
+          <text x="230" y="405" font-size="10" fill="#64748b">$52</text>
+          <text x="230" y="445" font-size="10" fill="#64748b">$50</text>
+          <text x="230" y="485" font-size="10" fill="#64748b">$48</text>
+          <text x="230" y="515" font-size="10" fill="#64748b">$46</text>
+          
+          <!-- Time Labels -->
+          <text x="280" y="535" font-size="10" fill="#64748b">10:00</text>
+          <text x="360" y="535" font-size="10" fill="#64748b">11:00</text>
+          <text x="440" y="535" font-size="10" fill="#64748b">12:00</text>
+          <text x="520" y="535" font-size="10" fill="#64748b">13:00</text>
+          <text x="600" y="535" font-size="10" fill="#64748b">14:00</text>
+          
+          <!-- Professional Candlestick Chart -->
+          <!-- Candle 1 - Green (Up) -->
+          <line x1="260" y1="410" x2="260" y2="445" stroke="#22c55e" stroke-width="1"/>
+          <rect x="255" y="410" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Candle 2 - Red (Down) -->
+          <line x1="280" y1="405" x2="280" y2="440" stroke="#ef4444" stroke-width="1"/>
+          <rect x="275" y="415" width="10" height="25" fill="#ef4444"/>
+          
+          <!-- Candle 3 - Green -->
+          <line x1="300" y1="400" x2="300" y2="430" stroke="#22c55e" stroke-width="1"/>
+          <rect x="295" y="400" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 4 - Green -->
+          <line x1="320" y1="395" x2="320" y2="425" stroke="#22c55e" stroke-width="1"/>
+          <rect x="315" y="395" width="10" height="15" fill="#22c55e"/>
+          
+          <!-- Candle 5 - Red -->
+          <line x1="340" y1="385" x2="340" y2="420" stroke="#ef4444" stroke-width="1"/>
+          <rect x="335" y="395" width="10" height="25" fill="#ef4444"/>
+          
+          <!-- Candle 6 - Green -->
+          <line x1="360" y1="375" x2="360" y2="415" stroke="#22c55e" stroke-width="1"/>
+          <rect x="355" y="375" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 7 - Green -->
+          <line x1="380" y1="365" x2="380" y2="400" stroke="#22c55e" stroke-width="1"/>
+          <rect x="375" y="365" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 8 - Red -->
+          <line x1="400" y1="355" x2="400" y2="390" stroke="#ef4444" stroke-width="1"/>
+          <rect x="395" y="370" width="10" height="20" fill="#ef4444"/>
+          
+          <!-- Candle 9 - Red -->
+          <line x1="420" y1="350" x2="420" y2="385" stroke="#ef4444" stroke-width="1"/>
+          <rect x="415" y="365" width="10" height="20" fill="#ef4444"/>
+          
+          <!-- Candle 10 - Green -->
+          <line x1="440" y1="345" x2="440" y2="380" stroke="#22c55e" stroke-width="1"/>
+          <rect x="435" y="345" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 11 - Green -->
+          <line x1="460" y1="335" x2="460" y2="370" stroke="#22c55e" stroke-width="1"/>
+          <rect x="455" y="335" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 12 - Green -->
+          <line x1="480" y1="325" x2="480" y2="360" stroke="#22c55e" stroke-width="1"/>
+          <rect x="475" y="325" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Candle 13 - Red -->
+          <line x1="500" y1="320" x2="500" y2="355" stroke="#ef4444" stroke-width="1"/>
+          <rect x="495" y="335" width="10" height="20" fill="#ef4444"/>
+          
+          <!-- Candle 14 - Green -->
+          <line x1="520" y1="315" x2="520" y2="350" stroke="#22c55e" stroke-width="1"/>
+          <rect x="515" y="315" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Candle 15 - Green -->
+          <line x1="540" y1="305" x2="540" y2="340" stroke="#22c55e" stroke-width="1"/>
+          <rect x="535" y="305" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Candle 16 - Red -->
+          <line x1="560" y1="300" x2="560" y2="335" stroke="#ef4444" stroke-width="1"/>
+          <rect x="555" y="315" width="10" height="20" fill="#ef4444"/>
+          
+          <!-- Candle 17 - Green -->
+          <line x1="580" y1="290" x2="580" y2="325" stroke="#22c55e" stroke-width="1"/>
+          <rect x="575" y="290" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Candle 18 - Green -->
+          <line x1="600" y1="280" x2="600" y2="315" stroke="#22c55e" stroke-width="1"/>
+          <rect x="595" y="280" width="10" height="20" fill="#22c55e"/>
+          
+          <!-- Candle 19 - Green -->
+          <line x1="620" y1="285" x2="620" y2="320" stroke="#22c55e" stroke-width="1"/>
+          <rect x="615" y="285" width="10" height="15" fill="#22c55e"/>
+          
+          <!-- Candle 20 - Red -->
+          <line x1="640" y1="280" x2="640" y2="315" stroke="#ef4444" stroke-width="1"/>
+          <rect x="635" y="295" width="10" height="20" fill="#ef4444"/>
+          
+          <!-- Candle 21 - Green -->
+          <line x1="660" y1="290" x2="660" y2="325" stroke="#22c55e" stroke-width="1"/>
+          <rect x="655" y="290" width="10" height="25" fill="#22c55e"/>
+          
+          <!-- Moving Averages -->
+          <path d="M240,430 C260,425 280,420 300,416 C320,412 340,406 360,402 C380,398 400,394 420,390 C440,386 460,380 480,377 C500,374 520,370 540,366 C560,362 580,358 600,353 C620,349 640,348 660,345 C680,342" 
+                stroke="#3b82f6" stroke-width="2" fill="none"/>
+                
+          <path d="M240,415 C260,413 280,410 300,408 C320,406 340,399 360,394 C380,389 400,381 420,376 C440,371 460,367 480,363 C500,359 520,355 540,350 C560,346 580,341 600,336 C620,331 640,329 660,325 C680,321" 
+                stroke="#8b5cf6" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+                
+          <!-- Volume Chart -->
+          <rect x="255" y="490" width="10" height="25" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="275" y="490" width="10" height="15" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="295" y="490" width="10" height="20" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="315" y="490" width="10" height="25" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="335" y="490" width="10" height="15" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="355" y="490" width="10" height="20" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="375" y="490" width="10" height="30" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="395" y="490" width="10" height="15" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="415" y="490" width="10" height="10" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="435" y="490" width="10" height="25" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="455" y="490" width="10" height="15" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="475" y="490" width="10" height="30" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="495" y="490" width="10" height="15" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="515" y="490" width="10" height="25" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="535" y="490" width="10" height="20" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="555" y="490" width="10" height="10" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="575" y="490" width="10" height="25" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="595" y="490" width="10" height="30" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="615" y="490" width="10" height="20" fill="rgba(34, 197, 94, 0.3)"/>
+          <rect x="635" y="490" width="10" height="15" fill="rgba(239, 68, 68, 0.3)"/>
+          <rect x="655" y="490" width="10" height="20" fill="rgba(34, 197, 94, 0.3)"/>
+          
+          <!-- Chart Legend -->
+          <circle cx="250" y="545" r="4" fill="#3b82f6"/>
+          <text x="260" y="548" font-size="10" fill="#64748b">SMA (20)</text>
+          
+          <circle cx="320" y="545" r="4" fill="#8b5cf6"/>
+          <text x="330" y="548" font-size="10" fill="#64748b">EMA (20)</text>
+          
+          <rect x="390" y="541" width="8" height="8" fill="#22c55e"/>
+          <text x="405" y="548" font-size="10" fill="#64748b">Bullish</text>
+          
+          <rect x="450" y="541" width="8" height="8" fill="#ef4444"/>
+          <text x="465" y="548" font-size="10" fill="#64748b">Bearish</text>
+          
+          <!-- Tool Tips and Price Point Markers -->
+          <circle cx="600" cy="290" r="4" fill="#ce0e2d" stroke="white" stroke-width="1"/>
+          
+          <!-- Tooltip for Current Price -->
+          <rect x="570" y="250" width="80" height="30" rx="4" fill="#1e293b"/>
+          <polygon points="595,280 600,290 605,280" fill="#1e293b"/>
+          <text x="580" y="270" font-size="12" fill="white">$54.87</text>
+          
+          <!-- Market Movers Section -->
+          <rect x="720" y="220" width="230" height="150" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="740" y="250" font-size="16" fill="#1e293b" font-weight="bold">Top Gainers</text>
+          
+          <!-- Gainers List -->
+          <text x="740" y="280" font-size="14" fill="#1e293b">VMIL</text>
+          <text x="850" y="280" font-size="14" fill="#22c55e" text-anchor="end">+4.8%</text>
+          
+          <text x="740" y="310" font-size="14" fill="#1e293b">SEP</text>
+          <text x="850" y="310" font-size="14" fill="#22c55e" text-anchor="end">+3.2%</text>
+          
+          <text x="740" y="340" font-size="14" fill="#1e293b">KPREIT</text>
+          <text x="850" y="340" font-size="14" fill="#22c55e" text-anchor="end">+2.9%</text>
+          
+          <text x="740" y="370" font-size="14" fill="#ce0e2d" font-weight="bold">GK</text>
+          <text x="850" y="370" font-size="14" fill="#22c55e" text-anchor="end">+2.3%</text>
+          
+          <!-- Losers Section -->
+          <rect x="720" y="390" width="230" height="150" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="740" y="420" font-size="16" fill="#1e293b" font-weight="bold">Top Losers</text>
+          
+          <!-- Losers List -->
+          <text x="740" y="450" font-size="14" fill="#1e293b">JBG</text>
+          <text x="850" y="450" font-size="14" fill="#ef4444" text-anchor="end">-2.1%</text>
+          
+          <text x="740" y="480" font-size="14" fill="#1e293b">PJAM</text>
+          <text x="850" y="480" font-size="14" fill="#ef4444" text-anchor="end">-1.8%</text>
+          
+          <text x="740" y="510" font-size="14" fill="#1e293b">JMMBGL</text>
+          <text x="850" y="510" font-size="14" fill="#ef4444" text-anchor="end">-1.5%</text>
+          
+          <!-- Chart Overlay Technical Indicators -->
+          <!-- RSI Indicator -->
+          <line x1="600" y1="290" x2="640" y2="290" stroke="#ce0e2d" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="645" y="294" font-size="10" fill="#ce0e2d">R</text>
+          
+          <!-- Support Line -->
+          <line x1="240" y1="445" x2="680" y2="445" stroke="#3b82f6" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="245" y="458" font-size="10" fill="#3b82f6">Support</text>
+          
+          <!-- Resistance Line -->
+          <line x1="240" y1="325" x2="680" y2="325" stroke="#ef4444" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="245" y="338" font-size="10" fill="#ef4444">Resistance</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dashboard-screenshot {
+    width: 100%;
+    border-bottom-left-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.05);
+  }
+</style>
+
+<!-- Market Overview -->
+<section class="section" style="background-color: var(--surface-100);">
+  <div class="container">
+    <h2 class="section-title">Market Overview</h2>
+    <p class="section-subtitle">Current state of the Jamaica Stock Exchange</p>
+    
+    <div class="market-grid">
+      <div class="market-card">
+        <h3 class="market-card-title">JSE Indices</h3>
+        
+        <div class="market-visual">
+          <!-- Small Market Overview Chart -->
+          <svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid Lines -->
+            <line x1="0" y1="20" x2="300" y2="20" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2 2"/>
+            <line x1="0" y1="40" x2="300" y2="40" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2 2"/>
+            <line x1="0" y1="60" x2="300" y2="60" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2 2"/>
+            
+            <!-- Main Index Line -->
+            <path d="M0,45 C20,50 40,35 60,30 C80,25 100,40 120,45 C140,50 160,40 180,35 C200,30 220,25 240,20 C260,15 280,25 300,20" 
+                  stroke="#10b981" stroke-width="2" fill="none"/>
+            
+            <!-- Junior Index Line -->
+            <path d="M0,40 C20,45 40,50 60,45 C80,40 100,50 120,55 C140,60 160,50 180,55 C200,60 220,50 240,45 C260,40 280,55 300,50" 
+                  stroke="#ec4899" stroke-width="2" fill="none"/>
+            
+            <!-- Combined Index Line -->
+            <path d="M0,50 C20,45 40,40 60,35 C80,30 100,45 120,40 C140,35 160,45 180,40 C200,35 220,30 240,25 C260,20 280,30 300,25" 
+                  stroke="#0ea5e9" stroke-width="2" fill="none"/>
+            
+            <!-- Legend -->
+            <circle cx="240" cy="75" r="3" fill="#10b981"/>
+            <text x="245" y="78" font-size="6" fill="#64748b">Main</text>
+            
+            <circle cx="265" cy="75" r="3" fill="#ec4899"/>
+            <text x="270" y="78" font-size="6" fill="#64748b">Junior</text>
+            
+            <circle cx="290" cy="75" r="3" fill="#0ea5e9"/>
+            <text x="295" y="78" font-size="6" fill="#64748b">Combined</text>
+          </svg>
+        </div>
+        
+        <div class="metric-row">
+          <div class="metric-label">
+            JSE Index
+            <span class="metric-pill" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Main</span>
+          </div>
+          <div class="metric-value">
+            <div>392,452.34</div>
+            <div class="change-indicator change-positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 12 7-7 7 7"/>
+                <path d="M12 19V5"/>
+              </svg>
+              0.65%
+            </div>
+          </div>
+        </div>
+        
+        <div class="metric-row">
+          <div class="metric-label">
+            JSE Junior
+            <span class="metric-pill" style="background: rgba(236, 72, 153, 0.1); color: #ec4899;">Junior</span>
+          </div>
+          <div class="metric-value">
+            <div>3,872.15</div>
+            <div class="change-indicator change-negative">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m19 12-7 7-7-7"/>
+                <path d="M12 5v14"/>
+              </svg>
+              0.32%
+            </div>
+          </div>
+        </div>
+        
+        <div class="metric-row">
+          <div class="metric-label">
+            JSE Combined
+            <span class="metric-pill" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">All</span>
+          </div>
+          <div class="metric-value">
+            <div>402,338.89</div>
+            <div class="change-indicator change-positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 12 7-7 7 7"/>
+                <path d="M12 19V5"/>
+              </svg>
+              0.44%
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="market-card">
+        <h3 class="market-card-title">Top Gainers</h3>
+        
+        <div class="market-visual">
+          <!-- Top Gainers Chart -->
+          <svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bar Chart -->
+            <rect x="30" y="60" width="40" height="15" fill="rgba(16, 185, 129, 0.7)"/>
+            <rect x="90" y="50" width="40" height="25" fill="rgba(16, 185, 129, 0.7)"/>
+            <rect x="150" y="45" width="40" height="30" fill="rgba(16, 185, 129, 0.7)"/>
+            <rect x="210" y="30" width="40" height="45" fill="rgba(16, 185, 129, 0.7)"/>
+            
+            <!-- Labels -->
+            <text x="50" y="55" font-size="7" fill="#1e293b" text-anchor="middle">KPREIT</text>
+            <text x="110" y="45" font-size="7" fill="#1e293b" text-anchor="middle">SEP</text>
+            <text x="170" y="40" font-size="7" fill="#1e293b" text-anchor="middle">GK</text>
+            <text x="230" y="25" font-size="7" fill="#1e293b" text-anchor="middle">VMIL</text>
+            
+            <!-- Percentages -->
+            <text x="50" y="75" font-size="8" fill="#10b981" text-anchor="middle" font-weight="bold">+2.9%</text>
+            <text x="110" y="75" font-size="8" fill="#10b981" text-anchor="middle" font-weight="bold">+3.2%</text>
+            <text x="170" y="75" font-size="8" fill="#10b981" text-anchor="middle" font-weight="bold">+2.3%</text>
+            <text x="230" y="75" font-size="8" fill="#10b981" text-anchor="middle" font-weight="bold">+4.8%</text>
+          </svg>
+        </div>
+        
+        <div class="metric-row">
+          <div class="metric-label">
+            Victoria Mutual Investments
+            <span class="metric-pill" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">VMIL</span>
+          </div>
+          <div class="metric-value">
+            <div class="change-indicator change-positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 12 7-7 7 7"/>
+                <path d="M12 19V5"/>
+              </svg>
+              4.8%
+            </div>
+          </div>
+        </div>
+        
+        <div class="metric-row">
+          <div class="metric-label">
+            Seprod Limited
+            <span class="metric-pill" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">SEP</span>
+          </div>
+          <div class="metric-value">
+            <div class="change-indicator change-positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 12 7-7 7 7"/>
+                <path d="M12 19V5"/>
+              </svg>
+              3.2%
+            </div>
+          </div>
+        </div>
+        
+        <div class="metric-row highlight-row">
+          <div class="metric-label">
+            <span class="gk-highlight">GraceKennedy</span>
+            <span class="metric-pill" style="background: rgba(206, 14, 45, 0.1); color: var(--gk-red);">GK</span>
+          </div>
+          <div class="metric-value">
+            <div class="change-indicator change-positive">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 12 7-7 7 7"/>
+                <path d="M12 19V5"/>
+              </svg>
+              2.3%
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="market-card">
+        <h3 class="market-card-title">Market Heatmap</h3>
+        
+        <div class="market-visual">
+          <!-- Market Heatmap -->
+          <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- Heatmap Tiles -->
+            <g transform="translate(10, 10)">
+              <!-- Row 1 -->
+              <rect x="0" y="0" width="50" height="50" fill="#22c55e" opacity="0.7"/>
+              <rect x="55" y="0" width="40" height="40" fill="#22c55e" opacity="0.6"/>
+              <rect x="100" y="0" width="35" height="35" fill="#22c55e" opacity="0.5"/>
+              <rect x="140" y="0" width="45" height="45" fill="#ef4444" opacity="0.2"/>
+              <rect x="190" y="0" width="30" height="30" fill="#ef4444" opacity="0.3"/>
+              <rect x="225" y="0" width="25" height="25" fill="#ef4444" opacity="0.5"/>
+              <rect x="255" y="0" width="35" height="35" fill="#ef4444" opacity="0.6"/>
+              
+              <!-- Row 2 -->
+              <rect x="0" y="55" width="40" height="40" fill="#22c55e" opacity="0.5"/>
+              <rect x="45" y="55" width="70" height="70" fill="#ce0e2d" opacity="0.8"/>
+              <rect x="120" y="55" width="30" height="30" fill="#22c55e" opacity="0.3"/>
+              <rect x="155" y="55" width="25" height="25" fill="#ef4444" opacity="0.4"/>
+              <rect x="185" y="55" width="45" height="45" fill="#22c55e" opacity="0.3"/>
+              <rect x="235" y="55" width="55" height="55" fill="#ef4444" opacity="0.7"/>
+              
+              <!-- Row 3 -->
+              <rect x="0" y="100" width="35" height="35" fill="#ef4444" opacity="0.5"/>
+              <rect x="40" y="100" width="25" height="25" fill="#ef4444" opacity="0.3"/>
+              <rect x="70" y="100" width="40" height="40" fill="#22c55e" opacity="0.2"/>
+              <rect x="115" y="100" width="60" height="60" fill="#22c55e" opacity="0.7"/>
+              <rect x="180" y="100" width="35" height="35" fill="#22c55e" opacity="0.4"/>
+              <rect x="220" y="100" width="45" height="45" fill="#22c55e" opacity="0.6"/>
+              
+              <!-- Labels -->
+              <text x="25" y="25" font-size="6" fill="white" text-anchor="middle">NCBFG</text>
+              <text x="75" y="20" font-size="6" fill="white" text-anchor="middle">SEP</text>
+              <text x="117" y="18" font-size="6" fill="white" text-anchor="middle">VMIL</text>
+              <text x="162" y="23" font-size="6" fill="#1e293b" text-anchor="middle">JBG</text>
+              <text x="205" y="15" font-size="6" fill="#1e293b" text-anchor="middle">PJAM</text>
+              <text x="237" y="13" font-size="6" fill="white" text-anchor="middle">SGJ</text>
+              <text x="272" y="18" font-size="6" fill="white" text-anchor="middle">JMMBGL</text>
+              
+              <text x="20" y="75" font-size="6" fill="white" text-anchor="middle">SALF</text>
+              <text x="80" y="90" font-size="12" fill="white" text-anchor="middle" font-weight="bold">GK</text>
+              <text x="135" y="70" font-size="6" fill="#1e293b" text-anchor="middle">HONBUN</text>
+              <text x="167" y="68" font-size="6" fill="#1e293b" text-anchor="middle">LASD</text>
+              <text x="207" y="78" font-size="6" fill="#1e293b" text-anchor="middle">KPREIT</text>
+              <text x="262" y="83" font-size="6" fill="white" text-anchor="middle">PROVEN</text>
+              
+              <text x="17" y="117" font-size="6" fill="white" text-anchor="middle">DTL</text>
+              <text x="52" y="112" font-size="6" fill="#1e293b" text-anchor="middle">MDS</text>
+              <text x="90" y="120" font-size="6" fill="#1e293b" text-anchor="middle">TTECH</text>
+              <text x="145" y="130" font-size="6" fill="white" text-anchor="middle">PJAM</text>
+              <text x="197" y="117" font-size="6" fill="#1e293b" text-anchor="middle">WISYNCO</text>
+              <text x="242" y="122" font-size="6" fill="white" text-anchor="middle">SJ</text>
+            </g>
+          </svg>
+        </div>
+        
+        <div class="legend-row">
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: rgba(239, 68, 68, 0.7);"></span>
+            <span class="legend-label">Decline</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: rgba(34, 197, 94, 0.7);"></span>
+            <span class="legend-label">Growth</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: rgba(206, 14, 45, 0.8);"></span>
+            <span class="legend-label">GK</span>
+          </div>
+          <div class="legend-note">
+            <span>Size indicates market cap</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .market-visual {
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-surface-primary);
+  }
+  
+  .highlight-row {
+    background-color: rgba(206, 14, 45, 0.03);
+    border-radius: var(--radius-md);
+    padding: 0.25rem 0.5rem;
+    margin: 0 -0.5rem;
+  }
+  
+  .gk-highlight {
+    color: var(--gk-red);
+    font-weight: var(--font-semibold);
+  }
+  
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    justify-content: center;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  
+  .legend-label {
+    color: var(--color-text-secondary);
+  }
+  
+  .legend-note {
+    width: 100%;
+    text-align: center;
+    margin-top: var(--space-2);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+  }
+</style>
+
+<!-- CTA Section -->
+<section class="section cta-section">
+  <div class="container container-narrow">
+    <div class="cta-card">
+      <!-- Decorative elements -->
+      <div class="cta-decoration">
+        <svg class="deco-chart" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,80 C25,70 50,90 75,60 C100,30 125,60 150,40 C175,20 200,30 225,15 C250,0 275,20 300,10" 
+                stroke="rgba(255,255,255,0.2)" stroke-width="3" fill="none"/>
+          <path d="M0,80 C25,70 50,90 75,60 C100,30 125,60 150,40 C175,20 200,30 225,15 C250,0 275,20 300,10" 
+                stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="none" stroke-linecap="round"/>
+        </svg>
+        
+        <div class="deco-circles">
+          <div class="deco-circle circle-1"></div>
+          <div class="deco-circle circle-2"></div>
+          <div class="deco-circle circle-3"></div>
+        </div>
+      </div>
+      
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to dive deeper?</h2>
+        <p class="cta-subtitle">Access our comprehensive Jamaica Stock Exchange analytics platform with real-time data and powerful tools.</p>
+        <a href="#" class="btn btn-light">
+          Launch Dashboard
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/>
+            <path d="m12 5 7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      
+      <!-- GK Devices Illustration -->
+      <div class="devices-illustration">
+        <svg class="devices" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Laptop -->
+          <rect x="80" y="30" width="240" height="150" rx="8" fill="#1a1a1a"/>
+          <rect x="90" y="40" width="220" height="130" fill="#f8fafc"/>
+          <rect x="60" y="180" width="280" height="10" rx="5" fill="#1a1a1a"/>
+          
+          <!-- Screen Content -->
+          <rect x="100" y="50" width="200" height="15" rx="2" fill="#e2e8f0"/>
+          <rect x="100" y="75" width="90" height="45" rx="4" fill="rgba(206, 14, 45, 0.1)"/>
+          <rect x="200" y="75" width="90" height="45" rx="4" fill="rgba(59, 130, 246, 0.1)"/>
+          <rect x="100" y="130" width="190" height="30" rx="4" fill="rgba(34, 197, 94, 0.1)"/>
+          
+          <!-- Mobile device -->
+          <rect x="340" y="90" width="40" height="80" rx="5" fill="#1a1a1a"/>
+          <rect x="343" y="95" width="34" height="65" fill="#f8fafc"/>
+          <circle cx="360" cy="170" r="3" fill="#e2e8f0"/>
+          
+          <!-- Mobile Screen Content -->
+          <rect x="347" y="100" width="26" height="5" rx="1" fill="#e2e8f0"/>
+          <rect x="347" y="110" width="26" height="12" rx="2" fill="rgba(206, 14, 45, 0.1)"/>
+          <rect x="347" y="127" width="26" height="12" rx="2" fill="rgba(59, 130, 246, 0.1)"/>
+          <rect x="347" y="144" width="26" height="12" rx="2" fill="rgba(34, 197, 94, 0.1)"/>
+          
+          <!-- Tablet -->
+          <rect x="20" y="60" width="70" height="100" rx="5" fill="#1a1a1a"/>
+          <rect x="25" y="65" width="60" height="85" fill="#f8fafc"/>
+          <circle cx="55" cy="155" r="3" fill="#e2e8f0"/>
+          
+          <!-- Tablet Screen Content -->
+          <rect x="30" y="70" width="50" height="6" rx="1" fill="#e2e8f0"/>
+          <rect x="30" y="82" width="50" height="20" rx="2" fill="rgba(206, 14, 45, 0.1)"/>
+          <rect x="30" y="107" width="50" height="20" rx="2" fill="rgba(59, 130, 246, 0.1)"/>
+          <rect x="30" y="132" width="50" height="14" rx="2" fill="rgba(34, 197, 94, 0.1)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-card {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 6rem;
+  }
+  
+  .cta-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  .deco-chart {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+  }
+  
+  .deco-circles {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .circle-1 {
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+  }
+  
+  .circle-2 {
+    bottom: -30px;
+    left: -30px;
+    width: 120px;
+    height: 120px;
+  }
+  
+  .circle-3 {
+    top: 30%;
+    right: 20%;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .cta-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .devices-illustration {
+    position: absolute;
+    bottom: -110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 500px;
+    height: 200px;
+    z-index: 1;
+  }
+  
+  .devices {
+    width: 100%;
+    height: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .devices-illustration {
+      bottom: -80px;
+      width: 90%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if(targetId === '#') return;
+        
+        document.querySelector(targetId).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // Time selector buttons
+    document.querySelectorAll('.time-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.time-button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+</script>
+{% endblock %}
